@@ -104,3 +104,105 @@ import { PrismaService } from './prisma.service';
 })
 export class PrismaModule {}
 ```
+**Global**
+```ts
+import { Global, Module } from '@nestjs/common';
+import { PrismaService } from './prisma.service';
+
+@Global()
+@Module({
+  providers: [PrismaService],
+  exports: [PrismaService]
+})
+export class PrismaModule {}
+```
+**@Req()**
+```ts
+import { Controller, Post, Req } from "@nestjs/common";
+import { Request } from "express";
+import { AuthService } from "./auth.service";
+
+@Controller('auth')
+export class AuthController{
+    constructor(private authService: AuthService){}
+
+    @Post('signup')
+    signup(@Req() req: Request){
+        console.log(req.body)
+        return this.authService.signup()
+    }
+
+
+    @Post('signin')
+    signin(){
+        return 'I am Sign In'
+    }
+}
+```
+**@Body()**
+```ts
+import { Body, Controller, Post, Req } from "@nestjs/common";
+import { Request } from "express";
+import { AuthService } from "./auth.service";
+
+@Controller('auth')
+export class AuthController{
+    constructor(private authService: AuthService){}
+
+    @Post('signup')
+    signup(@Body() dto : any){
+        console.log({
+            dto,
+        })
+        return this.authService.signup()
+    }
+
+
+    @Post('signin')
+    signin(){
+        return 'I am Sign In'
+    }
+}
+```
+use dto interface
+```ts
+import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+
+export class AuthDto{
+    @IsEmail()
+    @IsNotEmpty()
+    email: string;
+
+    @IsString()
+    @IsNotEmpty()
+    password: string;
+}
+```
+**Controller**
+```ts
+import { Body, Controller, Post, } from "@nestjs/common";
+import { AuthService } from "./auth.service";
+import { AuthDto } from "./dto";
+
+@Controller('auth')
+export class AuthController{
+    constructor(private authService: AuthService){}
+
+    @Post('signup')
+    signup(@Body() dto : AuthDto){
+        console.log({
+            dto,
+        })
+        return this.authService.signup()
+    }
+
+
+    @Post('signin')
+    signin(){
+        return 'I am Sign In'
+    }
+}
+```
+
+***Pipes***
+
