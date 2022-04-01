@@ -203,6 +203,62 @@ export class AuthController{
     }
 }
 ```
+`npm i bcrypt`
+A library to help you hash passwords.
 
+You can read about bcrypt in Wikipedia as well as in the following article: How To Safely Store A Password
+`npm i argon2`
+Bcrypt vẫn là một hàm băm được chấp nhận cho mật khẩu. Không cần phải chuyển đổi nếu bạn không muốn (kể từ phiên bản 7.2.0). Ngoài ra, PASSWORD_DEFAULTchỉ nên thay đổi (theo chính sách PHP Internals ) trên bản phát hành đầy đủ tiếp theo (7.3.0 trở lên). Nếu bạn muốn đảm bảo rằng bạn chỉ tiếp tục với bcrypt, bạn có thể sử dụng PASSWORD_BCRYPTthay thế. Tuy nhiên, điều này là không cần thiết, như chúng ta sẽ thảo luận bên dưới.
+***500***
+ForbiddenException
+```json
+{
+  "statusCode": 403,
+  "message": "Forbidden"
+}
+```
+
+***passport***
+`https://passportjs.org/`
+***jwt***
+`https://jwt.io`
 ***Pipes***
 
+### Authentication
+`https://docs.nestjs.com/security/authentication`
+### Guard
+```ts
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+
+@Controller('users')
+export class UserController {
+    //GET /users/me
+    @UseGuards(AuthGuard('jwt'))
+    @Get('me')
+    getMe(){
+        return 'user info'
+    }
+}
+```
+jwt.strategy.ts
+```ts
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { PassportStrategy } from "@nestjs/passport";
+import { ExtractJwt, Strategy } from "passport-jwt";
+
+@Injectable()
+export class JwtStrategy extends PassportStrategy(
+    Strategy,
+    'jwt',
+) {
+    constructor(config:ConfigService) {
+        super({
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            ignoreExpiration: false,
+            secretOrKey: config.get('JWT_SECRET')
+        });
+    }
+}
+```
