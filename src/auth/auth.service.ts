@@ -22,9 +22,9 @@ export class AuthService {
 
             })
             //POST khong thay hash
-            delete user.hash
+            
             //return saved user
-            return user
+            return this.signToken(user.id, user.email)
             //check trùng id
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
